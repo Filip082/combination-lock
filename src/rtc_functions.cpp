@@ -30,8 +30,8 @@ void RTC_Init_dateTime() {
     // Start the Pico hardware RTC
     rtc_init(); 
 
-    int16_t year;
-    int8_t day, hour, min, sec;
+    int year;
+    int day, hour, min, sec;
     char month_str[4];
     
     // Parse the compiler macros

@@ -96,7 +96,6 @@ uint8_t validatePin()
     {
         pin = pin << 4 | input.pin[i];
     }
-    printf("Entered PIN: %04X, Expected: %04X\n", pin, user.pin);
     return pin == user.pin;
 }
 
@@ -237,7 +236,7 @@ int main()
             size_t config_len;
             if (receive_config(config_buffer, sizeof(config_buffer), &config_len) && validate_config(config_buffer, config_len))
             {
-                put_pixel(pio, sm, save_config_to_fram(config_buffer, config_len) ? colors[YES] : colors[NO]);
+                save_config_to_fram(config_buffer, config_len);
                 flat *flats = (flat *)(config_buffer + sizeof(config_block));
                 for (size_t i = 0; i < ((config_len - sizeof(config_block)) / sizeof(flat)); i++)
                 {

@@ -62,9 +62,9 @@ void print_open() {
 
 void configuration_error() {
     SSD1315_FillRect(4,25,120,35,0);
-    const char *txt = "Bledna";
-    const char *txt2 = "konfiguracja";
-    SSD1315_DrawString8x16(10, 25, txt, 0, 1);
-    SSD1315_DrawString8x16(10, 35, txt2, 0, 1);
+    const char *txt =  "Nieprawidlowa";
+    const char *txt2 = "Konfiguracja!";
+    SSD1315_DrawString8x16(13, 25, txt, 0, 1);
+    SSD1315_DrawString8x16(13, 43, txt2, 0, 1);
     SSD1315_Update();
 }
