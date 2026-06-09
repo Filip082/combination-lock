@@ -1,0 +1,14 @@
+config:
+  min_address: 5
+  max_address: 8
+  log_capacity: 16
+
+flats:
+  - address: 5
+    pin: 1234 -- This is a comment
+  - address: 6
+    pin: 5678
+  - address: 7
+    pin: 2137
+  - address: 8
+    pin: 4267
