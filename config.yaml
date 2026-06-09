@@ -5,7 +5,7 @@ config:
 
 flats:
   - address: 5
-    pin: 1234 -- This is a comment
+    pin: 1234
   - address: 6
     pin: 5678
   - address: 7
