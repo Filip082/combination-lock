@@ -26,17 +26,21 @@ int8_t get_dotw(int d, int m, int y) {
 }
 
 // Initialize RTC with compile time
-void RTC_Init_dateTime() {
+void RTC_Init_dateTime(const char* date, const char* time) {
     // Start the Pico hardware RTC
-    rtc_init(); 
+    rtc_init();
+    // Set the time directly (replaces your RTC_setDateTime function)
+    rtc_set_datetime(date, time);
+}
 
+void rtc_set_datetime(const char* date, const char* time) {
     int year;
     int day, hour, min, sec;
     char month_str[4];
     
-    // Parse the compiler macros
-    sscanf(__DATE__, "%s %d %d", month_str, &day, &year);
-    sscanf(__TIME__, "%d:%d:%d", &hour, &min, &sec);
+    // Parse the provided date and time strings
+    sscanf(date, "%s %d %d", month_str, &day, &year);
+    sscanf(time, "%d:%d:%d", &hour, &min, &sec);
     
     // Populate the Pico's native datetime structure
     datetime_t t = {

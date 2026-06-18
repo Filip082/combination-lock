@@ -48,15 +48,6 @@ void tud_cdc_line_state_cb(uint8_t itf, bool dtr, bool rts)
 
 bool receive_config(uint8_t *buf, size_t buf_size, size_t *received_len)
 {
-    while (true)
-    {
-        if (getchar_timeout_us(2000000) != 0xAA)
-            continue;
-        if (getchar_timeout_us(500000) != 0x55)
-            continue;
-        break;
-    }
-
     uint8_t len_bytes[2];
     len_bytes[0] = getchar_timeout_us(500000);
     len_bytes[1] = getchar_timeout_us(500000);
@@ -208,7 +199,7 @@ int main()
 
     init_display();
 
-    RTC_Init_dateTime();
+    RTC_Init_dateTime(__DATE__, __TIME__);
     RTC_Init_Interrupt(printDate);
     printDate();
 
@@ -234,7 +225,17 @@ int main()
         {
             uint8_t config_buffer[256];
             size_t config_len;
-            if (receive_config(config_buffer, sizeof(config_buffer), &config_len) && validate_config(config_buffer, config_len))
+
+            while (true)
+            {
+                if (getchar_timeout_us(2000000) != 0xAA)
+                    continue;
+                if (getchar_timeout_us(500000) != 0x55)
+                    continue;
+                break;
+            }
+            char c = getchar_timeout_us(500000);
+            if (c == 'W' && receive_config(config_buffer, sizeof(config_buffer), &config_len) && validate_config(config_buffer, config_len))
             {
                 save_config_to_fram(config_buffer, config_len);
                 flat *flats = (flat *)(config_buffer + sizeof(config_block));
@@ -244,6 +245,27 @@ int main()
                 }
                 cfg = *(config_block *)config_buffer;
                 setState(IDLE);
+            } else if (c == 'T')
+            {
+                uint8_t len_bytes[2];
+                len_bytes[0] = getchar_timeout_us(500000);
+                len_bytes[1] = getchar_timeout_us(500000);
+                uint16_t len = len_bytes[0] | (len_bytes[1] << 8);
+                if (len != 21)
+                {
+                    setState(NO);
+                    continue;
+                }
+
+                uint8_t date[12], time[9];
+                for (uint16_t i = 0; i < sizeof(date); i++)
+                    date[i] = getchar_timeout_us(500000);
+                for (uint16_t i = 0; i < sizeof(time); i++)
+                    time[i] = getchar_timeout_us(500000);
+                putchar(0x06); // ACK
+                printf("Wgrywam czas do RTC: %s %s\n", date, time);
+                rtc_set_datetime((const char*)(date), (const char*)(time));
+                printDate();
             }
             usb_connected = false;
         }
