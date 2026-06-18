@@ -25,8 +25,8 @@ void print_address(uint16_t address) {
     SSD1315_FillRect(4,25,120,35,0);
 
     SSD1315_DrawLock(18, 32, 0);
-    char txt[4];
-    sprintf(txt, "%4d", address);
+    char txt[5];
+    sprintf(txt, "%4d\0", address % 10000);
     SSD1315_DrawString16x32(60, 27, txt);
     SSD1315_Update();
 }
