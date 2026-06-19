@@ -49,11 +49,11 @@ def build_payload(doc) -> bytes:
     return payload
 
 
-def send(port: str, baud: int, payload: bytes, payload_type: str = 'W'):
+def send(port: str, payload: bytes, payload_type: str = 'W'):
     frame = FRAME_MAGIC + payload_type.encode('ascii') + struct.pack('<H', len(payload)) + payload
-    print(f"Wysyłam ramkę ({len(frame)} B) na {port} @ {baud} bps...")
+    print(f"Wysyłam ramkę ({len(frame)} B) na {port}...")
 
-    with serial.Serial(port, baud, timeout=3) as ser:
+    with serial.Serial(port, 115200, timeout=3) as ser:
         ser.write(frame)
         print(f"Wysłano {len(frame)} bajtów, czekam na ACK...")
         ack = ser.read(1)
@@ -68,27 +68,25 @@ def send(port: str, baud: int, payload: bytes, payload_type: str = 'W'):
                 break
             print(f"Urządzenie: {line.decode().rstrip()}")
 
-def send_time(port: str, baud: int):
+def send_time(port: str):
     import datetime
     now = datetime.datetime.now()
     date_str = now.strftime("%b %d %Y\x00")  # e.g., "Jun 10 2024"
     time_str = now.strftime("%H:%M:%S\x00")   # e.g., "14:30:00"
     print(f"Wgrywam czas do RTC: {date_str} {time_str}")
     payload = date_str.encode('ascii') + time_str.encode('ascii')
-    print(f"Payload czasu ({len(payload)} B): {payload!r}")
-    send(port, baud, payload, 'T')
+    send(port, payload, 'T')
 
 def main():
     ap = argparse.ArgumentParser(description="Wgraj konfigurację domofonowego zamka przez UART")
     ap.add_argument('yaml_file', help="Plik konfiguracyjny YAML")
     ap.add_argument('--port', default='/dev/ttyACM0')
-    ap.add_argument('--baud', type=int, default=115200)
     ap.add_argument('--dry-run', action='store_true', help="Pokaż payload bez wysyłania")
     ap.add_argument('--time', action='store_true', help="Wgraj czas kompilacji do RTC")
     args = ap.parse_args()
 
     if args.time:
-        send_time(args.port, args.baud)
+        send_time(args.port)
         return
 
     with open(args.yaml_file) as f:
@@ -101,7 +99,7 @@ def main():
         print(' '.join(f'{b:02X}' for b in payload))
         return
 
-    send(args.port, args.baud, payload)
+    send(args.port, payload)
 
 
 if __name__ == '__main__':
