@@ -1,7 +1,7 @@
 #pragma once
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
-#include "common.h"
+#include "config.h"
 
 #define FRAM_ADDR 0x50
 #define I2C_PORT i2c0

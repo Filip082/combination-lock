@@ -8,7 +8,7 @@
 #include "leds.h"
 #include "fram.h"
 #include "keypad.h"
-#include "common.h"
+#include "config.h"
 #include "display.h"
 // extern "C" {
 #include "rtc_functions.h"
